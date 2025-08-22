@@ -1,0 +1,109 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
+type Query {
+    getUser(id: ID!): User
+    getResultsOfSurvey(id: ID!): [Result!]!
+}
+
+type Mutation {
+
+}
+
+"""
+User, it shouldn't have password
+"""
+type User {
+    id: ID!
+    role: Role!
+    organization: Organization
+    name: String!
+    username: String!
+    surveys: [Survey!]
+}
+
+enum Role {
+    SYSADMIN
+    ORGANIZATION_ADMIN
+    RESEARCHER
+    ANALYST
+}
+
+type Organization {
+    id: ID!
+    name: String!
+    description: String
+    surveys: [Survey!]
+}
+
+type Survey {
+    id: ID!
+    author: User
+    organization: Organization
+    title: String!
+    description: String
+    start_date: DateTime
+    end_date: DateTime
+    questions: [Question!]!
+    results: [Result!]!
+}
+
+type Result {
+    id: ID!
+    survey: Survey
+    IP: String
+    submitted: DateTime
+    answers: [ResultAnswer!]
+}
+
+union ResultAnswerType = [Answer!]! | Answer | String
+
+type ResultAnswer {
+    question: Question!
+    answer: ResultAnswerType
+}
+
+enum QuestionType {
+    TEXT
+    NUMBER
+    CHECKBOX
+    PERCENTAGE
+    SLIDE
+    RATIO_SELECT
+    MENU_SELECT
+    MULTI_MENU_SELECT
+}
+
+type Question {
+    id: ID!
+    type: QuestionType!
+    header: String!
+    description: String
+    attributes: [Attribute!]
+    answers: [Answer!]
+}
+
+type Answer {
+    name: String!
+    description: String
+}
+
+enum AttributeType {
+    MIN_VALUE
+    MAX_VALUE
+    MIN_SELECT
+    MAX_SELECT
+    MIN_LABEL
+    MAX_LABEL
+}
+
+type Attribute {
+    type: AttributeType!
+    value: String!
+}
+
+# Date Time type
+scalar DateTime

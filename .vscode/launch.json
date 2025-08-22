@@ -11,6 +11,21 @@
             "program": "main.py",
             "cwd": "${workspaceFolder}/server/python/basic",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Angular: Run SSR",
+            "type": "node-terminal",
+            "request": "launch",
+            "preLaunchTask": "Angular: Build-Watch SSR",
+            "cwd": "${workspaceFolder}/client/angular",
+            "command": "npm run serve:ssr:ssr"
+        },
+        {
+            "name": "Angular: Serve SSR",
+            "type": "node-terminal",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/client/angular",
+            "command": "ng serve --project=\"ssr\""
         }
     ]
 }

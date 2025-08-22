@@ -1,12 +1,20 @@
 import http.server
-import socketserver
 import logging
 logging.basicConfig(level=logging.NOTSET)
 
 
+#
+from repository import load_repository
+from services import load_services
+load_repository() #load repositories first
+load_services() #load services
+
+from util import ProviderRegistry, PasswordEncoder, Md5PasswordEncoder
+ProviderRegistry().register_provider(PasswordEncoder, Md5PasswordEncoder)
+
 from handler import CustomHandler
 # Importing all endpoints.
-import restapi.question
+import restapi
 
 PORT = 8080
 
