@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
@@ -7,7 +7,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "css"
         }
       },
       "root": "projects/ssr",
@@ -32,7 +32,7 @@
               }
             ],
             "styles": [
-              "projects/ssr/src/styles.scss"
+              "projects/ssr/src/styles.css"
             ],
             "scripts": [],
             "server": "projects/ssr/src/main.server.ts",
@@ -60,7 +60,13 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "projects/ssr/src/environments/environment.ts",
+                  "with": "projects/ssr/src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -96,7 +102,7 @@
               }
             ],
             "styles": [
-              "projects/ssr/src/styles.scss"
+              "projects/ssr/src/styles.css"
             ],
             "scripts": []
           }
@@ -107,7 +113,7 @@
       "projectType": "library",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "css"
         }
       },
       "root": "projects/shared",

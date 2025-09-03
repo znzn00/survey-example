@@ -2,6 +2,8 @@
 from typing import Type, TypeVar
 import logging
 
+logger = logging.getLogger('Singleton')
+
 T = TypeVar('T')
 
 class SingletonRegistry:
@@ -27,7 +29,7 @@ def singleton(cls: T):
     """
     def get_instance(*args, **kwargs) -> Type[T]:
         if cls not in SingletonRegistry.instances:
-            logging.debug(f"Created sigleton of {cls}")
+            logger.debug(f"Created sigleton of {cls}")
             return SingletonRegistry._register(cls, cls(*args, **kwargs))
         return SingletonRegistry.get_instance(cls)
     

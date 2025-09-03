@@ -7,6 +7,7 @@ import sqlite3
 from typing import Any, Optional
 from util import inject, ProviderRegistry, singleton, context_scoped, value
 
+logger = logging.getLogger('Repository')
 
 class DataSessionState(Enum):
     NOT_CHANGES = 0
@@ -50,7 +51,7 @@ class SQLite3Session(DataSession):
     __conn: sqlite3.Connection
 
     def __init__(self, conn: sqlite3.Connection):
-        logging.debug(f"{self} started")
+        logger.debug(f"{self} started")
         super().__init__()
         self.__conn = conn
 
@@ -63,11 +64,10 @@ class SQLite3Session(DataSession):
     def query(self, *args, **kwargs):
         return self.__conn.execute(*args)
 
-
     def close(self):
         match self.state:
             case DataSessionState.CLOSED:
-                logging.debug(f"{self} is already stopped")
+                logger.debug(f"{self} is already stopped")
                 return
             case DataSessionState.ERROR:
                 self.__conn.rollback()
@@ -75,15 +75,15 @@ class SQLite3Session(DataSession):
                 self.__conn.commit()
         self.__conn.close()
         self.state = DataSessionState.CLOSED
-        logging.debug(f"{self} stopped")
-    
+        logger.debug(f"{self} stopped")
+
     def __del__(self):
         # Just making sure it's destroyed
         if self.state == DataSessionState.CLOSED:
-            logging.debug(f"{self} destroyed")
+            logger.debug(f"{self} destroyed")
             return
         self.close()
-        logging.debug(f"{self} destroyed")
+        logger.debug(f"{self} destroyed")
 
 
 @singleton
@@ -100,9 +100,8 @@ class SQLite3Datasource(Datasource):
             os.remove(self.file)
             self.__runInitScript()
 
-
     def __runInitScript(self):
-        logging.info("Executing init script", exc_info=type(self))
+        logger.info("Executing init script", exc_info=type(self))
         conn = self.__createConn()
         with open('../../../planning/sqlite3.sql', 'r') as script:
             conn.executescript(script.read())

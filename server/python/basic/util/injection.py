@@ -4,6 +4,7 @@ import logging
 from inspect import isabstract
 from .singleton import singleton
 
+logger = logging.getLogger('Injection')
 
 T = TypeVar('T')
 
@@ -61,14 +62,14 @@ class ProviderRegistry:
         if not isabstract(target):
             raise InvalidClassForProviderException(target)
         typeRef = self.__solveClassForProvider(func)
-        logging.debug(f"Register provider for {target} with {typeRef}.")
+        logger.debug(f"Register provider for {target} with {typeRef}.")
         self.__provider[target] = func
 
     def register_provider_for_context(self, target: Type, func: Callable[[Any], Any]):
         if not isabstract(target) and not hasattr(target, '__context_only'):
             raise InvalidClassForProviderException(target)
         typeRef = self.__solveClassForProvider(func)
-        logging.debug(
+        logger.debug(
             f"For contexts, register provider for {target} with {typeRef}.")
         self.__providerForContext[target] = func
 

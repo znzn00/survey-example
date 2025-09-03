@@ -11,6 +11,7 @@ from cgi import parse_header
 from repository import DataSession
 from util import inject, singleton, Context
 
+logger = logging.getLogger('WebApp')
 
 PathParams = re.compile(r"(^[^?#]+)(\?[^#]+)?(#.+)?")
 
@@ -58,42 +59,42 @@ class Application:
         def reg(func: BaseEndpoint[Any]):
             self.register(HTTPMethod.GET, path,  func)
             return func
-        logging.debug(f"Registered Method GET on path: {path}")
+        logger.debug(f"Registered Method GET on path: {path}")
         return reg
 
     def HEAD(self, path: str | re.Pattern):
         def reg(func: BaseEndpoint[Any]):
             self.register(HTTPMethod.HEAD, path,  func)
             return func
-        logging.debug(f"Registered Method HEAD on path: {path}")
+        logger.debug(f"Registered Method HEAD on path: {path}")
         return reg
 
     def DELETE(self, path: str | re.Pattern):
         def reg(func: BaseEndpoint[Any]):
             self.register(HTTPMethod.DELETE, path,  func)
             return func
-        logging.debug(f"Registered Method DELETE on path: {path}")
+        logger.debug(f"Registered Method DELETE on path: {path}")
         return reg
 
     def POST(self,   path: str | re.Pattern):
         def reg(func: EndpointWithBody[Any]):
             self.register(HTTPMethod.POST, path,  func)
             return func
-        logging.debug(f"Registered Method POST on path: {path}")
+        logger.debug(f"Registered Method POST on path: {path}")
         return reg
 
     def PUT(self,   path: str | re.Pattern):
         def reg(func: EndpointWithBody[Any]):
             self.register(HTTPMethod.PUT, path,  func)
             return func
-        logging.debug(f"Registered Method DELETE on path: {path}")
+        logger.debug(f"Registered Method DELETE on path: {path}")
         return reg
 
     def PATCH(self, path: str | re.Pattern):
         def reg(func: EndpointWithBody[Any]):
             self.register(HTTPMethod.PATCH, path,  func)
             return func
-        logging.debug(f"Registered Method PATCH on path: {path}")
+        logger.debug(f"Registered Method PATCH on path: {path}")
         return reg
 
 
@@ -130,17 +131,18 @@ class Response[T]:
 
 class JsonResponse[T](Response[T]):
     def __init__(self, body: T, headers: dict[str, str] = dict(), status: HTTPStatus = HTTPStatus.OK):
-        super.__init__(body, headers, status)
+        super().__init__(body, headers, status)
 
     def writeToHandler(self, handler):
         for k, v in self.headers:
             handler.send_header(k, v)
         if self.body is None:
-            handler.end_headers()
             handler.send_response_only(self.status)
+            handler.end_headers()
             return
         payload = json.dumps(self.body)
         payload = payload.encode('utf-8')
+        handler.send_response(self.status)
         handler.send_header("Content-type", "application/json; charset=utf-8")
         handler.send_header("Content-length", len(payload))
         handler.end_headers()
@@ -169,7 +171,7 @@ class CustomHandler(BaseHTTPRequestHandler):
         return self.__context
 
     def parseResponse(self, response):
-        # logging.debug(response)
+        # logger.debug(response)
         match response:
             case None:
                 self.send_response(HTTPStatus.OK)
@@ -208,7 +210,7 @@ class CustomHandler(BaseHTTPRequestHandler):
                     try:
                         data = target_clazz(**data)
                     except TypeError as e:
-                        logging.info(type(e))
+                        logger.info(type(e))
                         raise HttpError(HTTPStatus.BAD_REQUEST,
                                         "Wrong JSON format.")
             case _:
@@ -235,6 +237,7 @@ class CustomHandler(BaseHTTPRequestHandler):
         self.__context.get_instance(DataSession).notifyError()
         if isinstance(e, HttpError):
             self.send_error(e.status, e.status.description, e.message)
+            return
         if isinstance(e, ConnectionAbortedError):
             raise e
         traceback.print_exception(e)
@@ -243,7 +246,7 @@ class CustomHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             self.parsed_url = urlparse(self.path)
-            logging.info("GET: "+self.parsed_url.path)
+            logger.info("GET: "+self.parsed_url.path)
             path = self.parsed_url.path
             endpoint, m = self.app.solve("GET", path)
             self.match = m
@@ -259,7 +262,7 @@ class CustomHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             self.parsed_url = urlparse(self.path)
-            logging.info("POST: "+self.parsed_url.path)
+            logger.info("POST: "+self.parsed_url.path)
             path = self.parsed_url.path
             endpoint, m = self.app.solve("POST", path)
             self.match = m

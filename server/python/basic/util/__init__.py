@@ -1,6 +1,7 @@
 from collections import defaultdict
 from ctypes import Union
 from decimal import Decimal
+import json
 import re
 from typing import List, Optional
 from .singleton import singleton
@@ -75,3 +76,6 @@ def value(key: str, default: Optional[str] = None) -> Optional[Property]:
     if val == None:
         return default
     return val
+
+def to_json(target: Any) -> str:
+    return json.dumps(target, default=lambda o: o.__dict__)

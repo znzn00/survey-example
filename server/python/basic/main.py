@@ -1,7 +1,7 @@
 import http.server
 import logging
-logging.basicConfig(level=logging.NOTSET)
-
+logging.basicConfig(format='[%(name)s][%(levelname)s] - %(asctime)s: %(message)s',level=logging.NOTSET)
+logger = logging.getLogger(__name__)
 
 #
 from repository import load_repository
@@ -24,6 +24,6 @@ def run():
     server.serve_forever()
 
 if __name__ == "__main__":
-    logging.info(f"Server running on port {PORT}")
+    logger.info(f"Server running on port {PORT}")
     run()
     

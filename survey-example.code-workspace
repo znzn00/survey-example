@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "root",
+			"path": "."
+		},
+		{
+			"name": "Angular",
+			"path": "client/angular"
+		},
+		{
+			"name": "Basic Python HTTP Server",
+			"path": "server/python/basic"
+		}
+	],
+	"settings": {}
+}

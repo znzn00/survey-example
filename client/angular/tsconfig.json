@@ -16,8 +16,8 @@
     "moduleResolution": "bundler",
     "paths": {
       "shared": [
-        "./dist/shared",
-        "./dist/shared"
+        // "./dist/shared"
+        "./projects/shared/src/public-api.ts"
       ]
     },
     "importHelpers": true,
